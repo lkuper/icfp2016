@@ -20,22 +20,9 @@
 
 <svg id="visualization" width="400" height="400"></svg>
 
-<input type="file" onchange="readProblem()" />
+<h1>put problem here:</h1>
 
-<h1>put problem here: <button id="go" onclick="draw();">visualize!</button></h1>
-<textarea cols=80 rows=25 id="theproblem">
-1
-4
-0,0
-1,0
-1,1
-0,1
-4
-0,0 1,0
-0,0 0,1
-1,0 1,1
-0,1 1,1
-</textarea>
+<input type="file" onchange="readProblem()" />
 
 <script>
 
@@ -80,6 +67,16 @@ function clear_visualization() {
     svg.removeChild(svg.firstChild);
 }
 
+function draw(leastright_x, leastup_y, rightest_x, uppest_y) {
+    console.log([leastright_x, leastup_y, rightest_x, uppest_y]);
+    var viewbox = [leastright_x - 1, (-uppest_y) - 1,
+                   (rightest_x - leastright_x) + 2,
+                   (uppest_y - leastup_y) + 2].join(" ");
+    console.log(viewbox);
+    var svg = document.getElementById("visualization");
+    svg.setAttribute("viewBox", viewbox);
+}
+
 function drawFromJSON(jsonString) {
     clear_visualization();
 
@@ -91,26 +88,16 @@ function drawFromJSON(jsonString) {
     polygons = JSON.parse(jsonString);
 
     for (var polygon_id in polygons) {
-        // console.log(polygon_id);
-        // console.log(polygons[polygon_id]);
         var points = polygons[polygon_id];
 
-        for (var thepoint in points) {
-            // console.log(points[thepoint][0]);
-            // console.log(points[thepoint][1]);
-
-            x_coord = parseFloat(points[thepoint][0]);
-            y_coord = parseFloat(points[thepoint][1]);
+        for (var point in points) {
+            x_coord = parseFloat(points[point][0]);
+            y_coord = parseFloat(points[point][1]);
 
             rightest_x = Math.max(x_coord, rightest_x);
             uppest_y = Math.max(y_coord, uppest_y);
             leastright_x = Math.min(x_coord, leastright_x);
             leastup_y = Math.min(y_coord, leastup_y);
-
-            // console.log(rightest_x);
-            // console.log(uppest_y);
-            // console.log(leastright_x);
-            // console.log(leastup_y);
         }
 
         for (var point = 1; point < points.length; point++) {
@@ -119,63 +106,8 @@ function drawFromJSON(jsonString) {
         addLine(points[points.length - 1], points[0]);
     }
 
-    console.log([leastright_x, leastup_y, rightest_x, uppest_y]);
-    var viewbox = [leastright_x - 1, (-uppest_y) - 1,
-                   (rightest_x - leastright_x) + 2,
-                   (uppest_y - leastup_y) + 2].join(" ");
-    console.log(viewbox);
-    var svg = document.getElementById("visualization");
-    svg.setAttribute("viewBox", viewbox);
+    draw(leastright_x, leastup_y, rightest_x, uppest_y);
 } 
-
-function draw() {
-  clear_visualization();
-  var problemarea = document.getElementById("theproblem");
-  var problemtext = problemarea.value;
-
-  tokens = problemtext.split(/\s+/);
-
-  var p = 0;
-  var npolygons = parseInt(tokens[p]);
-  p++;
-
-  rightest_x = Number.MIN_VALUE;
-  uppest_y = Number.MIN_VALUE;
-  leastright_x = Number.MAX_VALUE;
-  leastup_y = Number.MAX_VALUE;
-  
-  for (var polygon = 0; polygon < npolygons; polygon++) {
-    var points = [];
-    npoints = parseInt(tokens[p]);
-    p++;
-    for (var point = 0; point < npoints; point++) {
-      xy = tokens[p].split(",");
-      var thepoint = [parseInt(xy[0]), parseInt(xy[1])];
-      points.push(thepoint);
-      p++;
-
-      rightest_x = Math.max(thepoint[0], rightest_x);
-      uppest_y = Math.max(thepoint[1], uppest_y);
-      leastright_x = Math.min(thepoint[0], leastright_x);
-      leastup_y = Math.min(thepoint[1], leastup_y);
-    }
-
-    console.log(points);
-    for (var point = 1; point < npoints; point++) {
-      addLine(points[point], points[point - 1]);
-    }
-    addLine(points[npoints - 1], points[0]);
-  }
-
-
-  console.log([leastright_x, leastup_y, rightest_x, uppest_y]);
-  var viewbox = [leastright_x - 1, (-uppest_y) - 1,
-                 (rightest_x - leastright_x) + 2,
-                 (uppest_y - leastup_y) + 2].join(" ");
-  console.log(viewbox);
-  var svg = document.getElementById("visualization");
-  svg.setAttribute("viewBox", viewbox);
-}
 
 </script>
 

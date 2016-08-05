@@ -5,5 +5,6 @@
 python3 download_problems.py
 
 for problem in problems/*; do
+  echo $problem;
   ./parse_problem $problem > "$problem".json
 done

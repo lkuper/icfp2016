@@ -105,6 +105,7 @@ def main():
     problem_pairs = list_all_problems(snapshot_hash)
 
     for problem_id, spec_hash in problem_pairs:
+        print("downloading problem", problem_id)
         download_save_problem(problem_id, spec_hash)
     
 
