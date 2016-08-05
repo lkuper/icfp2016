@@ -90,13 +90,9 @@ function drawFromJSON(jsonString) {
     var polygons = problem;
     delete polygons["skeleton"] // destructive!
 
-    console.log(skeleton);
-    console.log(polygons);
-
     // draw skeleton
     for (var i in skeleton) {
         var endpoints = skeleton[i];
-        console.log("Line: " + endpoints[0] + " to " + endpoints[1])
         addLine(endpoints[0], endpoints[1], "lightgrey")
     }
 
