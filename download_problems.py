@@ -5,6 +5,7 @@
 import json
 import pycurl
 import time
+import os
 from io import BytesIO
 
 APIKEY = None
@@ -30,8 +31,8 @@ def get_curl(apicall):
     c.setopt(pycurl.URL, URLPREFIX + apicall)
     return c
 
-def get_json_response(c):
-    """Do the HTTP call, turn the returned json into a dict, and return it.
+def get_string_response(c):
+    """Do the HTTP call, return the raw resulting string.
     
     Also sleep for a second, so we don't go over the rate limit."""
     buffer = BytesIO()
@@ -40,13 +41,24 @@ def get_json_response(c):
     c.close()
     body = buffer.getvalue()
     time.sleep(1)
-    return json.loads(body.decode("utf-8"))
+    return body.decode("utf-8")
+
+def get_json_response(c):
+    """Do the HTTP call, turn the returned json into a dict, and return it.
+    
+    Also sleep for a second, so we don't go over the rate limit."""
+    return json.loads(get_string_response(c))
 
 # 'http://2016sv.icfpcontest.org/api/snapshot/list'
 def download_snapshots():
     c = get_curl("snapshot/list")
     d = get_json_response(c)
     return d
+
+def raw_blob_lookup(thehash):
+    c = get_curl("blob/" + thehash)
+    s = get_string_response(c)
+    return s
 
 def blob_lookup(thehash):
     c = get_curl("blob/" + thehash)
@@ -76,6 +88,13 @@ def list_all_problems(snapshot_hash):
         out.append((problem_d["problem_id"], problem_d["problem_spec_hash"]))
     return out
 
+def download_save_problem(problem_id, spec_hash):
+    blob = raw_blob_lookup(spec_hash)
+
+    assert os.path.exists("problems/")
+    with open("problems/problem_{:03d}".format(problem_id), "w") as outfile:
+        print(blob, file=outfile, end="")
+
 def main():
     global APIKEY
     APIKEY = load_api_key()
@@ -86,7 +105,7 @@ def main():
     problem_pairs = list_all_problems(snapshot_hash)
 
     for problem_id, spec_hash in problem_pairs:
-        print(problem_id, spec_hash)
+        download_save_problem(problem_id, spec_hash)
     
 
 if __name__ == "__main__": main()
