@@ -88,26 +88,16 @@ function drawFromJSON(jsonString) {
     polygons = JSON.parse(jsonString);
 
     for (var polygon_id in polygons) {
-        // console.log(polygon_id);
-        // console.log(polygons[polygon_id]);
         var points = polygons[polygon_id];
 
-        for (var thepoint in points) {
-            // console.log(points[thepoint][0]);
-            // console.log(points[thepoint][1]);
-
-            x_coord = parseFloat(points[thepoint][0]);
-            y_coord = parseFloat(points[thepoint][1]);
+        for (var point in points) {
+            x_coord = parseFloat(points[point][0]);
+            y_coord = parseFloat(points[point][1]);
 
             rightest_x = Math.max(x_coord, rightest_x);
             uppest_y = Math.max(y_coord, uppest_y);
             leastright_x = Math.min(x_coord, leastright_x);
             leastup_y = Math.min(y_coord, leastup_y);
-
-            // console.log(rightest_x);
-            // console.log(uppest_y);
-            // console.log(leastright_x);
-            // console.log(leastup_y);
         }
 
         for (var point = 1; point < points.length; point++) {
