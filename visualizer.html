@@ -80,6 +80,16 @@ function clear_visualization() {
     svg.removeChild(svg.firstChild);
 }
 
+function genericDraw(leastright_x, leastup_y, rightest_x, uppest_y) {
+    console.log([leastright_x, leastup_y, rightest_x, uppest_y]);
+    var viewbox = [leastright_x - 1, (-uppest_y) - 1,
+                   (rightest_x - leastright_x) + 2,
+                   (uppest_y - leastup_y) + 2].join(" ");
+    console.log(viewbox);
+    var svg = document.getElementById("visualization");
+    svg.setAttribute("viewBox", viewbox);
+}
+
 function drawFromJSON(jsonString) {
     clear_visualization();
 
@@ -119,13 +129,7 @@ function drawFromJSON(jsonString) {
         addLine(points[points.length - 1], points[0]);
     }
 
-    console.log([leastright_x, leastup_y, rightest_x, uppest_y]);
-    var viewbox = [leastright_x - 1, (-uppest_y) - 1,
-                   (rightest_x - leastright_x) + 2,
-                   (uppest_y - leastup_y) + 2].join(" ");
-    console.log(viewbox);
-    var svg = document.getElementById("visualization");
-    svg.setAttribute("viewBox", viewbox);
+    genericDraw(leastright_x, leastup_y, rightest_x, uppest_y);
 } 
 
 function draw() {
@@ -167,14 +171,8 @@ function draw() {
     addLine(points[npoints - 1], points[0]);
   }
 
+  genericDraw(leastright_x, leastup_y, rightest_x, uppest_y);
 
-  console.log([leastright_x, leastup_y, rightest_x, uppest_y]);
-  var viewbox = [leastright_x - 1, (-uppest_y) - 1,
-                 (rightest_x - leastright_x) + 2,
-                 (uppest_y - leastup_y) + 2].join(" ");
-  console.log(viewbox);
-  var svg = document.getElementById("visualization");
-  svg.setAttribute("viewBox", viewbox);
 }
 
 </script>
