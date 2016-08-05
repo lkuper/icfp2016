@@ -21,8 +21,6 @@ num_polygons = int(lines[0])
 cur_polygon = 0
 cur_vertex = 0
 for line_idx in range(0, len(lines)):
-    # if we've gotten through all the polygons, we're done
-
     # First line is the number of polygons we're expecting
     if line_idx == 0:
         pass
@@ -31,6 +29,7 @@ for line_idx in range(0, len(lines)):
     elif "," not in lines[line_idx]:
         cur_polygon = cur_polygon + 1
 
+        # if we've gotten through all the polygons, we're done!
         if cur_polygon > num_polygons:
             break
 
