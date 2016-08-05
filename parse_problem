@@ -5,44 +5,60 @@
 import sys
 import json
 
-filename = sys.argv[1]
+def convert_coord(coord):
+    if "/" in coord:
+        parts = coord.split("/")
+        num = float(parts[0]) / float(parts[1])
+    else:
+        num = float(coord)
+    return num
 
-polygons = {}
+def main():
+    filename = sys.argv[1]
 
-num_polygons = 0
-vertex_counts = [] # list of lists of vertices
+    polygons = {}
 
-with open(filename) as f:
-    lines = f.readlines()
-	
-lines = [x.strip('\n') for x in lines]
+    num_polygons = 0
+    vertex_counts = [] # list of lists of vertices
 
-num_polygons = int(lines[0])
-cur_polygon = 0
-cur_vertex = 0
+    with open(filename) as f:
+        lines = f.readlines()
+    
+    lines = [x.strip('\n') for x in lines]
 
-# First line is the number of polygons we're expecting, so skip it
-for line in lines[1:]:
+    num_polygons = int(lines[0])
+    cur_polygon = 0
+    cur_vertex = 0
+
+    # First line is the number of polygons we're expecting, so skip it
+    for line in lines[1:]:
+    
+        # If there's no comma, we've got a new polygon
+        if "," not in line:
+            cur_polygon = cur_polygon + 1
+
+            # if we've gotten through all the polygons, we're done!
+            if cur_polygon > num_polygons:
+                break
+
+            # reset number of vertices
+            cur_vertex = 0
+            polygons[cur_polygon] = []
         
-    # If there's no comma, we've got a new polygon
-    if "," not in line:
-        cur_polygon = cur_polygon + 1
+        # If there's a comma, we've got a new vertex
+        elif "," in line:
+            coords = line.split(",")
+            cur_vertex = cur_vertex + 1
+            #print("vertex", cur_vertex, "of polygon", cur_polygon, "is", coords)
 
-        # if we've gotten through all the polygons, we're done!
-        if cur_polygon > num_polygons:
-            break
+            # Divide out fractions; convert to floats
+            coords = [convert_coord(coord) for coord in coords]
 
-        # reset number of vertices
-        cur_vertex = 0
-        polygons[cur_polygon] = []
-        
-    # If there's a comma, we've got a new vertex
-    elif "," in line:
-        coords = line.split(",")
-        cur_vertex = cur_vertex + 1
-        #print("vertex", cur_vertex, "of polygon", cur_polygon, "is", coords)
-        polygons[cur_polygon].append(coords)
+            polygons[cur_polygon].append(coords)
 
-json_polygons = json.dumps(polygons)
+    json_polygons = json.dumps(polygons)
 
-print(json_polygons)
+    print(json_polygons)
+
+if __name__ == "__main__":
+    main()
