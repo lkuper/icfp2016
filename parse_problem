@@ -20,13 +20,12 @@ lines = [x.strip('\n') for x in lines]
 num_polygons = int(lines[0])
 cur_polygon = 0
 cur_vertex = 0
-for line_idx in range(0, len(lines)):
-    # First line is the number of polygons we're expecting
-    if line_idx == 0:
-        pass
+
+# First line is the number of polygons we're expecting, so skip it
+for line in lines[1:]:
         
     # If there's no comma, we've got a new polygon
-    elif "," not in lines[line_idx]:
+    if "," not in line:
         cur_polygon = cur_polygon + 1
 
         # if we've gotten through all the polygons, we're done!
@@ -38,8 +37,8 @@ for line_idx in range(0, len(lines)):
         polygons[cur_polygon] = []
         
     # If there's a comma, we've got a new vertex
-    elif "," in lines[line_idx]:
-        coords = lines[line_idx].split(",")
+    elif "," in line:
+        coords = line.split(",")
         cur_vertex = cur_vertex + 1
         #print("vertex", cur_vertex, "of polygon", cur_polygon, "is", coords)
         polygons[cur_polygon].append(coords)
