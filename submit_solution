@@ -1,0 +1,6 @@
+#/bin/bash
+
+# Usage: submit_solution <problem_id> <solution_file>
+
+curl --compressed -L -H Expect: -H 'X-API-Key: 47-739db88749c79175c4598bef9c5fb3b5' -F "problem_id=$1" -F "solution_spec=@$2" 'http://2016sv.icfpcontest.org/api/solution/submit'
+echo ""
