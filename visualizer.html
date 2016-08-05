@@ -18,8 +18,9 @@
 </head>
 <body>
 
-
 <svg id="visualization" width="400" height="400"></svg>
+
+<input type="file" onchange="readProblem()" />
 
 <h1>put problem here: <button id="go" onclick="draw();">visualize!</button></h1>
 <textarea cols=80 rows=25 id="theproblem">
@@ -37,6 +38,23 @@
 </textarea>
 
 <script>
+
+function readProblem() {
+    contents = "";
+
+    var file = document.querySelector('input[type=file]').files[0];
+    var reader = new FileReader();
+
+    reader.addEventListener("load", function() {
+        contents = reader.result;
+        drawFromJSON(contents);
+    }, false);
+
+    if (file) {
+        reader.readAsText(file);
+    }
+
+}
 
 function addLine(point1, point2) {
   var svg = document.getElementById("visualization");
@@ -61,6 +79,54 @@ function clear_visualization() {
   while (svg.firstChild)
     svg.removeChild(svg.firstChild);
 }
+
+function drawFromJSON(jsonString) {
+    clear_visualization();
+
+    rightest_x = Number.MIN_VALUE;
+    uppest_y = Number.MIN_VALUE;
+    leastright_x = Number.MAX_VALUE;
+    leastup_y = Number.MAX_VALUE;
+
+    polygons = JSON.parse(jsonString);
+
+    for (var polygon_id in polygons) {
+        // console.log(polygon_id);
+        // console.log(polygons[polygon_id]);
+        var points = polygons[polygon_id];
+
+        for (var thepoint in points) {
+            // console.log(points[thepoint][0]);
+            // console.log(points[thepoint][1]);
+
+            x_coord = parseFloat(points[thepoint][0]);
+            y_coord = parseFloat(points[thepoint][1]);
+
+            rightest_x = Math.max(x_coord, rightest_x);
+            uppest_y = Math.max(y_coord, uppest_y);
+            leastright_x = Math.min(x_coord, leastright_x);
+            leastup_y = Math.min(y_coord, leastup_y);
+
+            // console.log(rightest_x);
+            // console.log(uppest_y);
+            // console.log(leastright_x);
+            // console.log(leastup_y);
+        }
+
+        for (var point = 1; point < points.length; point++) {
+            addLine(points[point], points[point - 1]);
+        }
+        addLine(points[points.length - 1], points[0]);
+    }
+
+    console.log([leastright_x, leastup_y, rightest_x, uppest_y]);
+    var viewbox = [leastright_x - 1, (-uppest_y) - 1,
+                   (rightest_x - leastright_x) + 2,
+                   (uppest_y - leastup_y) + 2].join(" ");
+    console.log(viewbox);
+    var svg = document.getElementById("visualization");
+    svg.setAttribute("viewBox", viewbox);
+} 
 
 function draw() {
   clear_visualization();
