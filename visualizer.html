@@ -43,7 +43,7 @@ function readProblem() {
 
 }
 
-function addLine(point1, point2) {
+function addLine(point1, point2, color) {
   var svg = document.getElementById("visualization");
 
   var x1 = point1[0];
@@ -56,8 +56,8 @@ function addLine(point1, point2) {
   line.setAttribute('y1', y1);
   line.setAttribute('x2', x2);
   line.setAttribute('y2', y2);
-  line.setAttribute('stroke', "rgb(66,66,66)");
-  line.setAttribute('stroke-width', 0.02);
+  line.setAttribute('stroke', color);
+  line.setAttribute('stroke-width', 0.005);
   svg.appendChild(line);
 }
 
@@ -69,9 +69,9 @@ function clear_visualization() {
 
 function draw(leastright_x, leastup_y, rightest_x, uppest_y) {
     console.log([leastright_x, leastup_y, rightest_x, uppest_y]);
-    var viewbox = [leastright_x - 1, (-uppest_y) - 1,
-                   (rightest_x - leastright_x) + 2,
-                   (uppest_y - leastup_y) + 2].join(" ");
+    var viewbox = [leastright_x - 0.01, (-uppest_y) - 0.01,
+                   (rightest_x - leastright_x) + 0.02,
+                   (uppest_y - leastup_y) + 0.02].join(" ");
     console.log(viewbox);
     var svg = document.getElementById("visualization");
     svg.setAttribute("viewBox", viewbox);
@@ -85,8 +85,22 @@ function drawFromJSON(jsonString) {
     leastright_x = Number.MAX_VALUE;
     leastup_y = Number.MAX_VALUE;
 
-    polygons = JSON.parse(jsonString);
+    problem = JSON.parse(jsonString);
+    var skeleton = problem["skeleton"]
+    var polygons = problem;
+    delete polygons["skeleton"] // destructive!
 
+    console.log(skeleton);
+    console.log(polygons);
+
+    // draw skeleton
+    for (var i in skeleton) {
+        var endpoints = skeleton[i];
+        console.log("Line: " + endpoints[0] + " to " + endpoints[1])
+        addLine(endpoints[0], endpoints[1], "lightgrey")
+    }
+
+    // draw silhouette
     for (var polygon_id in polygons) {
         var points = polygons[polygon_id];
 
@@ -101,9 +115,9 @@ function drawFromJSON(jsonString) {
         }
 
         for (var point = 1; point < points.length; point++) {
-            addLine(points[point], points[point - 1]);
+            addLine(points[point], points[point - 1], "black");
         }
-        addLine(points[points.length - 1], points[0]);
+        addLine(points[points.length - 1], points[0], "black");
     }
 
     draw(leastright_x, leastup_y, rightest_x, uppest_y);

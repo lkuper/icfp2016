@@ -16,7 +16,8 @@ def convert_coord(coord):
 def main():
     filename = sys.argv[1]
 
-    polygons = {}
+    problem = {}
+    problem["skeleton"] = []
 
     num_polygons = 0
     vertex_counts = [] # list of lists of vertices
@@ -37,16 +38,18 @@ def main():
         if "," not in line:
             cur_polygon = cur_polygon + 1
 
-            # if we've gotten through all the polygons, we're done!
+            # if we've gotten through all the polygons, it's time to
+            # parse the skeleton
             if cur_polygon > num_polygons:
-                break
+                continue;
 
             # reset number of vertices
             cur_vertex = 0
-            polygons[cur_polygon] = []
+            problem[cur_polygon] = []
         
-        # If there's a comma, we've got a new vertex
-        elif "," in line:
+        # If there's a comma and we're not done parsing polygons yet,
+        # we've got a new vertex
+        elif "," in line and cur_polygon <= num_polygons:
             coords = line.split(",")
             cur_vertex = cur_vertex + 1
             #print("vertex", cur_vertex, "of polygon", cur_polygon, "is", coords)
@@ -54,11 +57,19 @@ def main():
             # Divide out fractions; convert to floats
             coords = [convert_coord(coord) for coord in coords]
 
-            polygons[cur_polygon].append(coords)
+            problem[cur_polygon].append(coords)
 
-    json_polygons = json.dumps(polygons)
+        # If there's a comma and we're done parsing polygons,
+        # we've got a skeleton segment
+        elif "," in line and cur_polygon > num_polygons:
+            endpoints = line.split(" ")
+            endpoints = [endpoint.split(",") for endpoint in endpoints]
+            endpoints = [[convert_coord(coord) for coord in endpoint] for endpoint in endpoints]
+            problem["skeleton"].append(endpoints)
 
-    print(json_polygons)
+    json_problem = json.dumps(problem)
+
+    print(json_problem)
 
 if __name__ == "__main__":
     main()
