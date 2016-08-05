@@ -26,6 +26,7 @@ def main():
     
     lines = [x.strip('\n') for x in lines]
 
+    print(filename)
     num_polygons = int(lines[0])
     cur_polygon = 0
     cur_vertex = 0
