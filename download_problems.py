@@ -48,11 +48,45 @@ def download_snapshots():
     d = get_json_response(c)
     return d
 
+def blob_lookup(thehash):
+    c = get_curl("blob/" + thehash)
+    d = get_json_response(c)
+    return d
+
+def latest_snapshot_hash(snapshots_d):
+    """Given the response from snapshot/list, find the hash of the last
+    snapshot."""
+    snapshots = snapshots_d['snapshots']
+    maxtime = 0
+    out = None
+    for d in snapshots:
+        if d["snapshot_time"] > maxtime:
+            maxtime = d["snapshot_time"]
+            out = d["snapshot_hash"]
+    return out
+
+def list_all_problems(snapshot_hash):
+    """Download latest contest snapshot and extract the list of problems.
+
+    Returns a list of (problem_id, problem_spec_hash) tuples.
+    """
+    snapshot = blob_lookup(snapshot_hash)
+    out = []
+    for problem_d in snapshot["problems"]:
+        out.append((problem_d["problem_id"], problem_d["problem_spec_hash"]))
+    return out
+
 def main():
     global APIKEY
     APIKEY = load_api_key()
     print("loaded API key:", APIKEY)
 
-    download_snapshots()
+    snapshots_d = download_snapshots()
+    snapshot_hash = latest_snapshot_hash(snapshots_d)
+    problem_pairs = list_all_problems(snapshot_hash)
+
+    for problem_id, spec_hash in problem_pairs:
+        print(problem_id, spec_hash)
+    
 
 if __name__ == "__main__": main()
