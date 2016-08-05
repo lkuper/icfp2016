@@ -1,0 +1,50 @@
+#! /usr/bin/env python3
+
+# Usage: parse-problem <problem-file>
+
+import sys
+import json
+
+filename = sys.argv[1]
+
+polygons = {}
+
+num_polygons = 0
+vertex_counts = [] # list of lists of vertices
+
+with open(filename) as f:
+    lines = f.readlines()
+	
+lines = [x.strip('\n') for x in lines]
+
+num_polygons = int(lines[0])
+cur_polygon = 0
+cur_vertex = 0
+for line_idx in range(0, len(lines)):
+    # if we've gotten through all the polygons, we're done
+
+    # First line is the number of polygons we're expecting
+    if line_idx == 0:
+        pass
+        
+    # If there's no comma, we've got a new polygon
+    elif "," not in lines[line_idx]:
+        cur_polygon = cur_polygon + 1
+
+        if cur_polygon > num_polygons:
+            break
+
+        # reset number of vertices
+        cur_vertex = 0
+        polygons[cur_polygon] = []
+        
+    # If there's a comma, we've got a new vertex
+    elif "," in lines[line_idx]:
+        coords = lines[line_idx].split(",")
+        cur_vertex = cur_vertex + 1
+        #print("vertex", cur_vertex, "of polygon", cur_polygon, "is", coords)
+        polygons[cur_polygon].append(coords)
+
+json_polygons = json.dumps(polygons)
+
+print(json_polygons)
