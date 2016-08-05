@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+  <title>visualizer</title>
+  <style>
+    svg#visualization {
+      border: 1px solid #666;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    textarea#theproblem {
+      background: #ddd;
+    }
+  </style>
+</head>
+<body>
+
+
+<svg id="visualization" width="400" height="400"></svg>
+
+<h1>put problem here: <button id="go" onclick="draw();">visualize!</button></h1>
+<textarea cols=80 rows=25 id="theproblem">
+1
+4
+0,0
+1,0
+1,1
+0,1
+4
+0,0 1,0
+0,0 0,1
+1,0 1,1
+0,1 1,1
+</textarea>
+
+<script>
+
+function addLine(point1, point2) {
+  var svg = document.getElementById("visualization");
+
+  var x1 = point1[0];
+  var x2 = point2[0];
+  var y1 = -point1[1];
+  var y2 = -point2[1];
+
+  var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line.setAttribute('x1', x1);
+  line.setAttribute('y1', y1);
+  line.setAttribute('x2', x2);
+  line.setAttribute('y2', y2);
+  line.setAttribute('stroke', "rgb(66,66,66)");
+  line.setAttribute('stroke-width', 3);
+  svg.appendChild(line);
+}
+
+function clear_visualization() {
+  var svg = document.getElementById("visualization");
+  while (svg.firstChild)
+    svg.removeChild(svg.firstChild);
+}
+
+function draw() {
+  clear_visualization();
+  var problemarea = document.getElementById("theproblem");
+  var problemtext = problemarea.value;
+
+  tokens = problemtext.split(/\s+/);
+
+  var p = 0;
+  var npolygons = parseInt(tokens[p]);
+  p++;
+
+  biggest_x = Number.MIN_VALUE;
+  biggest_y = Number.MIN_VALUE;
+  smallest_x = Number.MAX_VALUE;
+  smallest_y = Number.MAX_VALUE;
+  
+  for (var polygon = 0; polygon < npolygons; polygon++) {
+    var points = [];
+    npoints = parseInt(tokens[p]);
+    p++;
+    for (var point = 0; point < npoints; point++) {
+      xy = tokens[p].split(",");
+      var thepoint = [parseInt(xy[0]), parseInt(xy[1])];
+      points.push(thepoint);
+      p++;
+
+      biggest_x = Math.max(thepoint[0], biggest_x);
+      biggest_y = Math.max(thepoint[1], biggest_y);
+      smallest_x = Math.min(thepoint[0], smallest_x);
+      smallest_y = Math.min(thepoint[1], smallest_y);
+    }
+
+    console.log(points);
+    for (var point = 1; point < npoints; point++) {
+      addLine(points[point], points[point - 1]);
+    }
+    addLine(points[npoints - 1], points[0]);
+  }
+
+  var viewbox = [smallest_x * 1.5, -biggest_y * 1.5,
+                 biggest_x * 1.5, -smallest_y * 1.5].join(" ");
+  var svg = document.getElementById("visualization");
+  console.log(viewbox);
+  svg.setAttribute("viewBox", viewbox);
+}
+
+</script>
+
+</body>
+</html>
