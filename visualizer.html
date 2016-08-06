@@ -91,6 +91,7 @@ function clear_visualization() {
 function adjustViewport(leastright_x, leastup_y, rightest_x, uppest_y) {
     console.log([leastright_x, leastup_y, rightest_x, uppest_y]);
     var viewbox = [leastright_x - 0.01, (-uppest_y) - 0.01,
+                   // TODO: button that lets you switch these
                    // (rightest_x - leastright_x) + 0.02,
                    // (uppest_y - leastup_y) + 0.02].join(" ");
                    1.02,
