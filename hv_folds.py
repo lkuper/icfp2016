@@ -47,10 +47,15 @@ def solution_for(vfolds, hfolds):
     y_denominator = nrows
     for y_numerator in range(nrows + 1):
         for x_numerator in range(ncolumns + 1):
+
             solution_points.append(
-                SolutionPoint((Fraction(x_numerator, x_denominator),
-                               Fraction(y_numerator, y_denominator)),
-                              "hello") )
+                SolutionPoint(
+                    # source coords
+                    (Fraction(x_numerator, x_denominator),
+                     Fraction(y_numerator, y_denominator)),
+                    # destination coords
+                    (Fraction(x_numerator % 2, x_denominator),
+                     Fraction(y_numerator % 2, y_denominator))))
 
     solution_facets = []
     ## for every point, add a facet unless you're on the right edge or on the
@@ -64,7 +69,7 @@ def solution_for(vfolds, hfolds):
         if len(solution_facets) == nfacets: break
 
         solution_facets.append((index, index+1,
-                               index + ncolumns + 1 + 1, index + ncolumns + 1))
+                                index + ncolumns + 1 + 1, index + ncolumns + 1))
 
     return solution_points, solution_facets
 
