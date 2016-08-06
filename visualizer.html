@@ -2,10 +2,10 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+  <script src="http://ariutta.github.io/svg-pan-zoom/dist/svg-pan-zoom.min.js"></script>
   <title>visualizer</title>
   <style>
     svg#visualization {
-      float: right;
       border: 1px solid #666;
       display: block;
       margin-left: auto;
@@ -19,7 +19,14 @@
 </head>
 <body>
 
+<div style="float: right;">
 <svg id="visualization" width="400" height="400"></svg>
+    <div class="controls">
+      <button id="zoom-in">Zoom in</button>
+      <button id="zoom-out">Zoom out</button>
+      <button id="reset">Reset</button>
+    </div>
+</div>
 
 <p>problem json (clears automatically): <input type="file" class="problem" onchange="readSpec('problem')" /></p>
 
@@ -99,6 +106,32 @@ function adjustViewport(leastright_x, leastup_y, rightest_x, uppest_y) {
     console.log(viewbox);
     var svg = document.getElementById("visualization");
     svg.setAttribute("viewBox", viewbox);
+
+    // Borrowed from example at
+    // http://ariutta.github.io/svg-pan-zoom/demo/custom-controls.html
+
+    var panZoom = svgPanZoom('#visualization', {
+          zoomEnabled: true,
+          controlIconsEnabled: false
+        });
+
+    document.getElementById('zoom-in').addEventListener('click', function(ev){
+        ev.preventDefault()
+
+        panZoom.zoomIn()
+    });
+
+    document.getElementById('zoom-out').addEventListener('click', function(ev){
+        ev.preventDefault()
+
+        panZoom.zoomOut()
+    });
+
+    document.getElementById('reset').addEventListener('click', function(ev){
+        ev.preventDefault()
+
+        panZoom.resetZoom()
+    });
 }
 
 function drawFromJSON(jsonString, type) {
