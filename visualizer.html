@@ -91,8 +91,10 @@ function clear_visualization() {
 function adjustViewport(leastright_x, leastup_y, rightest_x, uppest_y) {
     console.log([leastright_x, leastup_y, rightest_x, uppest_y]);
     var viewbox = [leastright_x - 0.01, (-uppest_y) - 0.01,
-                   (rightest_x - leastright_x) + 0.02,
-                   (uppest_y - leastup_y) + 0.02].join(" ");
+                   // (rightest_x - leastright_x) + 0.02,
+                   // (uppest_y - leastup_y) + 0.02].join(" ");
+                   1.02,
+                   1.02].join(" ");
     console.log(viewbox);
     var svg = document.getElementById("visualization");
     svg.setAttribute("viewBox", viewbox);
