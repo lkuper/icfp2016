@@ -84,18 +84,18 @@ def format_solution(soln):
 
     # coords of source points
     source_coords = ["{},{}".format(str(point.source[0]), str(point.source[1])) for point in solution_points]
-    solution += "\n".join(source_coords)
+    solution += "\n".join(source_coords) + "\n"
 
     # number of facets
     solution += str(len(solution_facets)) + "\n"
 
     # list of facets w/ vertex indices
     facets = ["{} {}".format(len(facet)," ".join([str(index) for index in facet])) for facet in solution_facets]
-    solution += "\n".join(facets)
+    solution += "\n".join(facets) + "\n"
 
     # coords of dest points by index
     dest_coords = ["{},{}".format(str(point.dest[0]), str(point.dest[1])) for point in solution_points]
-    solution += "\n".join(dest_coords)
+    solution += "\n".join(dest_coords) + "\n"
 
     # make sure we have the right number of dest point locations
     assert len(set(dest_coords)) == 4
@@ -125,7 +125,7 @@ def find_top_right(polygons):
 def smallest_half_bigger_than(num):
     """Returns the smallest number that's >= num that we can achieve by
     repeated halving, or if num is >1, then return 1. Also return how many folds
-    we need to get that size"""
+    we need to get that size."""
     assert num > 0
     cur = Fraction(1, 1)
     nfolds = 0
@@ -144,17 +144,13 @@ def main():
     lowest_x, lowest_y = find_bottom_left(polygons)
     highest_x, highest_y = find_top_right(polygons)
 
-    height = highest_y - lowest_y
     width = highest_x - lowest_x
+    height = highest_y - lowest_y
 
-    print("need to generate a square that covers", lowest_x, lowest_y,
-          highest_x, highest_y)
-
-    print(smallest_half_bigger_than(1))
-    print(smallest_half_bigger_than(Fraction(1, 2)))
-    print(smallest_half_bigger_than(Fraction(1, 3)))
-    print(smallest_half_bigger_than(Fraction(1, 15)))
-    print(smallest_half_bigger_than(Fraction(1, 16)))
+    _, vfolds = smallest_half_bigger_than(width)
+    _, hfolds = smallest_half_bigger_than(height)
+    soln = solution_for(vfolds, hfolds)
+    format_solution(soln)
 
 if __name__ == "__main__":
     main()
