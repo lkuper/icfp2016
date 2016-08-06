@@ -5,6 +5,7 @@
   <title>visualizer</title>
   <style>
     svg#visualization {
+      float: right;
       border: 1px solid #666;
       display: block;
       margin-left: auto;
@@ -20,21 +21,23 @@
 
 <svg id="visualization" width="400" height="400"></svg>
 
-<h1>put problem here:</h1>
+<p>problem json (clears automatically): <input type="file" class="problem" onchange="readSpec('problem')" /></p>
 
-<input type="file" onchange="readProblem()" />
+<p>proposed solution json (optional; doesn&apos;t clear): <input type="file" class="solution" onchange="readSpec('solution')" /></p>
+
+<input type="button" value="clear!" onclick="clear_visualization()" />
 
 <script>
 
-function readProblem() {
+function readSpec(type) {
     contents = "";
 
-    var file = document.querySelector('input[type=file]').files[0];
+    var file = document.querySelector("." + type).files[0];
     var reader = new FileReader();
 
     reader.addEventListener("load", function() {
         contents = reader.result;
-        drawFromJSON(contents);
+        drawFromJSON(contents, type);
     }, false);
 
     if (file) {
@@ -77,8 +80,13 @@ function draw(leastright_x, leastup_y, rightest_x, uppest_y) {
     svg.setAttribute("viewBox", viewbox);
 }
 
-function drawFromJSON(jsonString) {
-    clear_visualization();
+function drawFromJSON(jsonString, type) {
+
+    // todo: parse and draw solutions
+
+    if (type === 'problem') {
+        clear_visualization();
+    }
 
     rightest_x = Number.MIN_VALUE;
     uppest_y = Number.MIN_VALUE;
