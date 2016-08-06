@@ -64,19 +64,21 @@ function addLine(point1, point2, color) {
   svg.appendChild(line);
 }
 
-function addCircle(point1, color) {
+function addCircle(point, color) {
   var svg = document.getElementById("visualization");
 
-  console.log(point1);
+  console.log(point);
 
-  var x = point1[0];
-  var y = -point1[1];
+  var x = point[0];
+  var y = -point[1];
 
   var dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
   dot.setAttribute('cx', x);
   dot.setAttribute('cy', y);
-  dot.setAttribute('r', 0.02);
-  dot.setAttribute('color', color);
+  dot.setAttribute('r', 0.01);
+  dot.setAttribute('stroke', color);
+  dot.setAttribute('stroke-width', 0.001);
+  dot.setAttribute('fill', color);
   svg.appendChild(dot);
 }
 
