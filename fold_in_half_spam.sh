@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in `seq 1 1481`; do
+for i in `seq 1 5000`; do
     if [ -e "problems/problem_$(printf "%03d\n" $i)" ]
     then
         python3 fold_in_half_solution.py problems/problem_$(printf "%03d\n" $i) \

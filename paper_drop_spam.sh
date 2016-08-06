@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in `seq 1 2000`; do
+for i in `seq 1 5000`; do
   problemfile="problems/problem_$(printf "%03d\n" $i)"
 
   if [ ! -e $problemfile ]; then
