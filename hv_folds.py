@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
+import sys
 from collections import namedtuple
-
 from fractions import Fraction
+
+from problem_parser import parse
 
 ## NB: vfolds reduce width.
 ## (they are like vsplits in vim)
@@ -100,12 +102,59 @@ def format_solution(soln):
 
     print(solution)
 
+def find_bottom_left(polygons):
+    lowest_x = float('inf')
+    lowest_y = float('inf')
+
+    for key, points in polygons.items():
+        for point in points:
+            lowest_x = min(point[0], lowest_x)
+            lowest_y = min(point[1], lowest_y)
+    return (lowest_x, lowest_y)
+
+def find_top_right(polygons):
+    highest_x = float('-inf')
+    highest_y = float('-inf')
+
+    for key, points in polygons.items():
+        for point in points:
+            highest_x = max(point[0], highest_x)
+            highest_y = max(point[1], highest_y)
+    return (highest_x, highest_y)
+
+def smallest_half_bigger_than(num):
+    """Returns the smallest number that's >= num that we can achieve by
+    repeated halving, or if num is >1, then return 1. Also return how many folds
+    we need to get that size"""
+    assert num > 0
+    cur = Fraction(1, 1)
+    nfolds = 0
+    while True:
+        thenext = Fraction(1, cur.denominator * 2)
+        if thenext >= num:
+            cur = thenext
+            nfolds += 1
+        else:
+            return cur, nfolds
+
 def main():
-    format_solution(solution_for(0,0))
-    print()
-    format_solution(solution_for(1,1))
-    print()
-    format_solution(solution_for(3, 2))
+    fn = sys.argv[1]
+    polygons = parse(fn)
+
+    lowest_x, lowest_y = find_bottom_left(polygons)
+    highest_x, highest_y = find_top_right(polygons)
+
+    height = highest_y - lowest_y
+    width = highest_x - lowest_x
+
+    print("need to generate a square that covers", lowest_x, lowest_y,
+          highest_x, highest_y)
+
+    print(smallest_half_bigger_than(1))
+    print(smallest_half_bigger_than(Fraction(1, 2)))
+    print(smallest_half_bigger_than(Fraction(1, 3)))
+    print(smallest_half_bigger_than(Fraction(1, 15)))
+    print(smallest_half_bigger_than(Fraction(1, 16)))
 
 if __name__ == "__main__":
     main()
