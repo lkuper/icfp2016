@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import copy
 from collections import namedtuple
 from fractions import Fraction
 
@@ -137,6 +138,18 @@ def smallest_half_bigger_than(num):
         else:
             return cur, nfolds
 
+def offset_solution_by(soln, offset_x, offset_y):
+    """Make a new solution in which all destination coordinates have been
+    shifted by the given offset."""
+    points, facets = soln
+    outpoints = []
+    for point in points:
+        outpoints.append(SolutionPoint(point.source,
+                                       # destination coords
+                                       ((point.dest[0] + offset_x),
+                                        (point.dest[1] + offset_y))))
+    return (outpoints, facets)
+
 def main():
     fn = sys.argv[1]
     polygons = parse(fn)
@@ -150,6 +163,8 @@ def main():
     _, vfolds = smallest_half_bigger_than(width)
     _, hfolds = smallest_half_bigger_than(height)
     soln = solution_for(vfolds, hfolds)
+    soln = offset_solution_by(soln, lowest_x, lowest_y)
+
     format_solution(soln)
 
 if __name__ == "__main__":
