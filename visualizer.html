@@ -64,6 +64,22 @@ function addLine(point1, point2, color) {
   svg.appendChild(line);
 }
 
+function addCircle(point1, color) {
+  var svg = document.getElementById("visualization");
+
+  console.log(point1);
+
+  var x = point1[0];
+  var y = -point1[1];
+
+  var dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  dot.setAttribute('cx', x);
+  dot.setAttribute('cy', y);
+  dot.setAttribute('r', 0.02);
+  dot.setAttribute('color', color);
+  svg.appendChild(dot);
+}
+
 function clear_visualization() {
   var svg = document.getElementById("visualization");
   while (svg.firstChild)
@@ -80,12 +96,29 @@ function draw(leastright_x, leastup_y, rightest_x, uppest_y) {
     svg.setAttribute("viewBox", viewbox);
 }
 
+function drawSolutionFromJSON(jsonString) {
+    solution = JSON.parse(jsonString);
+    console.log("the solution");
+    console.log(solution);
+
+    for (var i in solution) {
+        // console.log("a point")
+        addCircle(solution[i], "deepskyblue")
+    }
+} 
+
+
 function drawFromJSON(jsonString, type) {
 
     // todo: parse and draw solutions
 
     if (type === 'problem') {
         clear_visualization();
+    }
+
+    if (type === 'solution') {
+      drawSolutionFromJSON(jsonString);
+      return;
     }
 
     rightest_x = Number.MIN_VALUE;

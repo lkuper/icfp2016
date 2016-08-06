@@ -2,7 +2,7 @@
 
 ## Download all problems. Turn them all into json. OH YEAH.
 
-#python3 download_problems.py
+python3 download_problems.py
 
 rm problems/*.json
 

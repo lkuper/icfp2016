@@ -36,6 +36,7 @@ def main():
         lineptr += 1
 
     for line in lines[lineptr:]:
+        if not line: continue
         assert "," in line
         x, y = [convert_coord(s) for s in line.split(",")]
         dest_points.append((x,y))
