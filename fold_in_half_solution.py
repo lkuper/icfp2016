@@ -76,14 +76,23 @@ def paper_drop(lowest_x, lowest_y):
 4 0 1 5 4
 4 2 3 4 5
 """
+    ## bottom left corner: stay put
     out += "{0},{1}\n".format(str(lowest_x), str(lowest_y))
-    out += "{0},{1}\n".format(str(lowest_x+1), str(lowest_y))
-    out += "{0},{1}\n".format(str(lowest_x+1), str(lowest_y+1))
-    out += "{0},{1}\n".format(str(lowest_x), str(lowest_y+1))
 
+    ## bottom right corner: stay put
+    out += "{0},{1}\n".format(str(lowest_x+1), str(lowest_y))
+
+    ## top right corner goes to bottom right corner
+    out += "{0},{1}\n".format(str(lowest_x+1), str(lowest_y))
+
+    ## top left corner goes to bottom left corner
+    out += "{0},{1}\n".format(str(lowest_x), str(lowest_y))
+
+    ## middle of left side stays put
     halfway_left_x = lowest_x
     halfway_left_y = fractions.Fraction(lowest_y + lowest_y+1, 2)
 
+    ## middle of right side stays put
     halfway_right_x = lowest_x + 1
     halfway_right_y = fractions.Fraction(lowest_y + lowest_y+1, 2)
 
