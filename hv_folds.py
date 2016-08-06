@@ -38,7 +38,7 @@ def solution_for(vfolds, hfolds):
     ## how many facets?
     nfacets = ncolumns * nrows
 
-    print("this many facets & points", nfacets, npoints)
+    # print("this many facets & points", nfacets, npoints)
 
     solution_points = []
 
@@ -73,12 +73,39 @@ def solution_for(vfolds, hfolds):
 
     return solution_points, solution_facets
 
+def format_solution(soln):
+    solution_points, solution_facets = soln
+    solution = ""
+
+    # number of source points
+    solution += str(len(solution_points)) + "\n"
+
+    # coords of source points
+    source_coords = ["{},{}".format(str(point.source[0]), str(point.source[1])) for point in solution_points]
+    solution += "\n".join(source_coords)
+
+    # number of facets
+    solution += str(len(solution_facets)) + "\n"
+
+    # list of facets w/ vertex indices
+    facets = ["{} {}".format(len(facet)," ".join([str(index) for index in facet])) for facet in solution_facets]
+    solution += "\n".join(facets)
+
+    # coords of dest points by index
+    dest_coords = ["{},{}".format(str(point.dest[0]), str(point.dest[1])) for point in solution_points]
+    solution += "\n".join(dest_coords)
+
+    # make sure we have the right number of dest point locations
+    assert len(set(dest_coords)) == 4
+
+    print(solution)
+
 def main():
-    print(solution_for(0, 0))
+    format_solution(solution_for(0,0))
     print()
-    print(solution_for(1, 1))
+    format_solution(solution_for(1,1))
     print()
-    print(solution_for(3, 2))
+    format_solution(solution_for(3, 2))
 
 if __name__ == "__main__":
     main()
