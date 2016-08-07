@@ -29,6 +29,53 @@ def count_folds(width, height):
 ## TYPE SAFETY AHOY.
 SolutionPoint = namedtuple("SolutionPoint", ["source", "dest"])
 
+
+def irregular_fold(left_fold_length, down_fold_length):
+    """Create a Solution for if we want to fold over from the left
+    left_fold_length, and down from the top down_fold_length."""
+
+    # Only works for folds that are less than half the paper width.
+    assert left_fold_length < 0.5
+    assert down_fold_length < 0.5
+
+    solution_points = []
+
+    # print("left_fold_length", left_fold_length)
+    # print("down_fold_length", down_fold_length)
+
+    remaining_width = 1 - (left_fold_length * 2)
+    remaining_height = 1 - (down_fold_length * 2)
+
+    ## left to right
+    col_widths       = [remaining_width, left_fold_length, left_fold_length]
+    x_source_offsets = [sum(col_widths[0:i]) for i in range(0, 4)]
+    x_dest_offsets   = [0, remaining_width, 1 - left_fold_length, remaining_width]
+
+    ## bottom to top
+    row_heights      = [remaining_height, down_fold_length, down_fold_length]
+    y_source_offsets = [sum(row_heights[0:i]) for i in range(0, 4)]
+    y_dest_offsets   = [0, remaining_height, 1 - down_fold_length, remaining_height]
+
+    for y in range(0, 4):
+        for x in range(0, 4):
+            solution_points.append(
+                SolutionPoint(
+                    # source coords
+                    (Fraction(x_source_offsets[x]),
+                     Fraction(y_source_offsets[y])),
+                    # destination coords
+                    (Fraction(x_dest_offsets[x]),
+                     Fraction(y_dest_offsets[y]))))
+
+    solution_facets = [(0, 2, 10, 8),
+                       (2, 3, 11, 10),
+                       (10, 11, 15, 14),
+                       (8, 10, 14, 12)]
+
+    print(format_solution((solution_points, solution_facets)))
+
+    return solution_points, solution_facets
+
 def solution_for(vfolds, hfolds):
     """Create a Solution for if we want to fold horizontally hfolds times and
     vertically vfolds times."""
@@ -100,7 +147,7 @@ def format_solution(soln):
     solution += "\n".join(dest_coords) + "\n"
 
     # make sure we have the right number of dest point locations
-    assert len(set(dest_coords)) == 4
+    # assert len(set(dest_coords)) == 4
 
     return solution
 
@@ -233,6 +280,8 @@ def main():
     soln = solution_for(vfolds, hfolds)
 
     soln = offset_solution_by(soln, lowest_x, lowest_y)
+
+    # TODO: figure out how to use irregular_fold??
 
     # TODO: figure out how much to rotate by
     soln = rotate_solution_by(soln, ROTATION_AMOUNT, polygons)
