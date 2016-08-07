@@ -151,18 +151,12 @@ def offset_solution_by(soln, offset_x, offset_y):
                                         (point.dest[1] + offset_y))))
     return (outpoints, facets)
 
-def rotate_solution_by(soln, theta):
+def rotate_solution_by(soln, theta, problem_polygons):
     points, facets = soln
 
     destpoints = [(point.dest[0], point.dest[1]) for point in points]
-    # print("destpoints:")
-    # print(destpoints)n
     rotated_destpoints = rotate_polygon(destpoints, theta)
-    # print("rotated_destpoints:")
-    # print(rotated_destpoints)
     fractified = [(Fraction(point[0]), Fraction(point[1])) for point in rotated_destpoints]
-    # print("fractified:")
-    # print(fractified)
 
     assert len(points) == len(fractified)
 
@@ -171,9 +165,31 @@ def rotate_solution_by(soln, theta):
         outpoints.append(SolutionPoint(points[i].source,
                                        # destination coords
                                        fractified[i]))
-    # print("outpoints:")
-    # print(outpoints)
-    return (outpoints, facets)
+    # Last step: offset.
+    problem_leftmost = float('inf')
+    for key, points in problem_polygons.items():
+        for point in points:
+            problem_leftmost = min(point[0], problem_leftmost)
+
+    problem_bottommost = float('inf')
+    for key, points in problem_polygons.items():
+        for point in points:
+            problem_bottommost = min(point[1], problem_bottommost)
+
+    soln_leftmost = float('inf')
+    for point in fractified:
+        soln_leftmost = min(point[0], soln_leftmost)
+
+    soln_bottommost = float('inf')
+    for point in fractified:
+        soln_bottommost = min(point[1], soln_bottommost)
+
+    offset_x = problem_leftmost - soln_leftmost
+    offset_y = problem_bottommost - soln_bottommost
+
+    soln = offset_solution_by((outpoints, facets), offset_x, offset_y)
+
+    return soln
 
 
 # Adapted from http://stackoverflow.com/questions/20023209/python-function-for-rotating-2d-objects
@@ -202,11 +218,10 @@ def main():
     _, hfolds = smallest_half_bigger_than(height)
     soln = solution_for(vfolds, hfolds)
 
-    # TODO: figure out correct offset
-    # TODO: figure out how much to rotate by
-    soln = rotate_solution_by(soln, 50)
-
     soln = offset_solution_by(soln, lowest_x, lowest_y)
+
+    # TODO: figure out how much to rotate by
+    soln = rotate_solution_by(soln, 53, polygons)
 
     format_solution(soln)
 
