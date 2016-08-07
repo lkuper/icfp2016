@@ -35,8 +35,8 @@ def irregular_fold(left_fold_length, down_fold_length):
     left_fold_length, and toward down from the top down_fold_length."""
 
     # Only works for folds that are less than half the paper width.
-    assert left_fold_length < 0.5
-    assert down_fold_length < 0.5
+    assert left_fold_length <= 0.5
+    assert down_fold_length <= 0.5
 
     solution_points = []
 
