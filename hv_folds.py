@@ -31,8 +31,8 @@ SolutionPoint = namedtuple("SolutionPoint", ["source", "dest"])
 
 
 def irregular_fold(left_fold_length, down_fold_length):
-    """Create a Solution for if we want to fold over from the left
-    left_fold_length, and down from the top down_fold_length."""
+    """Create a Solution for if we want to fold over toward the left
+    left_fold_length, and toward down from the top down_fold_length."""
 
     # Only works for folds that are less than half the paper width.
     assert left_fold_length < 0.5
@@ -71,9 +71,6 @@ def irregular_fold(left_fold_length, down_fold_length):
                        (2, 3, 11, 10),
                        (10, 11, 15, 14),
                        (8, 10, 14, 12)]
-
-    print(format_solution((solution_points, solution_facets)))
-
     return solution_points, solution_facets
 
 def solution_for(vfolds, hfolds):
@@ -261,6 +258,70 @@ def quantize_solution(soln, max_denominator):
                                         (point.dest[1].limit_denominator(max_denominator)))))
     return (outpoints, facets)
 
+def rectified_box_resemblance(bounding1, bounding2):
+    """Given two width,height tuples, calculate the resemblance score for those
+    two boxes."""
+    ## computing the intersection
+    right = min(bounding1[0], bounding2[0])
+    top = min(bounding1[1], bounding2[1])
+
+    intersection = right * top
+    ## computing the overlap area
+    overlap = (bounding1[0] * bounding1[1] +
+               bounding2[0] * bounding2[1] -
+               intersection)
+    return intersection / overlap
+
+## what's the best you can do with irregular?
+def best_irregular_resemblance(probwidth, probheight):
+    """Return resemblance score that we *could* get for a given width and
+    height. Also return left fold length and down fold length."""
+    ourwidth = min(1, max(Fraction(1,2), probwidth))
+    ourheight = min(1, max(Fraction(1,2), probheight))
+    ourscore = rectified_box_resemblance((probwidth, probheight),
+                                         (ourwidth, ourheight))
+    return ourscore,(1-ourwidth,1-ourheight)
+
+def best_regular_resemblance(probwidth, probheight):
+    """Return resemblance score that we *could* get for a given width and
+    height. Also returns the (vfolds, hfolds) tuple."""
+
+    ourwidth, vfolds = smallest_half_bigger_than(probwidth)
+    ourheight, hfolds = smallest_half_bigger_than(probheight)
+
+    smaller_width = ourwidth / 2
+    more_vfolds = vfolds + 1
+    smaller_height = ourheight / 2
+    more_hfolds = hfolds + 1
+
+    ourboxes = []
+    ## small small
+    ourboxes.append((smaller_width, smaller_height))
+    ## small big
+    ourboxes.append((smaller_width, ourheight))
+    ## big small
+    ourboxes.append((ourwidth, smaller_height))
+    ## big big
+    ourboxes.append((ourwidth, ourheight))
+
+    scores_indices = [(rectified_box_resemblance((probwidth, probheight),
+                                                  bounding),
+                       i)
+                      for i,bounding in enumerate(ourboxes)]
+    maxscore,maxindex = max(scores_indices)
+
+    ## ... could have done this cleaner.
+    if maxindex == 0:
+        return maxscore, (more_vfolds, more_hfolds)
+    elif maxindex == 1:
+        return maxscore, (more_vfolds, hfolds)
+    elif maxindex == 2:
+        return maxscore, (vfolds, more_hfolds)
+    elif maxindex == 3:
+        return maxscore, (vfolds, hfolds)
+    else:
+        assert False, "something is very wrong"
+
 def main():
     # TODO: figure these out programmatically
     ROTATION_AMOUNT = 0
@@ -272,26 +333,29 @@ def main():
     lowest_x, lowest_y = find_bottom_left(polygons)
     highest_x, highest_y = find_top_right(polygons)
 
+    ## bounding box of the problem.
     width = highest_x - lowest_x
     height = highest_y - lowest_y
 
-    _, vfolds = smallest_half_bigger_than(width)
-    _, hfolds = smallest_half_bigger_than(height)
-    soln = solution_for(vfolds, hfolds)
+    regscore,(vfolds,hfolds) = best_regular_resemblance(width, height)
+    irregscore,(lfold,dfold) = best_irregular_resemblance(width, height)
+
+    if regscore >= irregscore:
+        soln = solution_for(vfolds, hfolds)
+    else:
+        soln = irregular_fold(lfold, dfold)
 
     soln = offset_solution_by(soln, lowest_x, lowest_y)
 
     # TODO: figure out how to use irregular_fold??
-
     # TODO: figure out how much to rotate by
     #soln = rotate_solution_by(soln, ROTATION_AMOUNT, polygons)
 
     # Try to fix numeric instability
     #soln = quantize_solution(soln, MAX_DENOMINATOR)
 
-    soln = format_solution(soln)
-
-    print(soln)
+    out = format_solution(soln)
+    print(out)
 
 if __name__ == "__main__":
     main()
