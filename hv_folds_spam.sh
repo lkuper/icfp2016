@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in `seq 1 6000`; do
+for i in `seq 7000 1`; do
   problemfile="problems/problem_$(printf "%03d\n" $i)"
 
   if [ ! -e $problemfile ]; then
@@ -11,5 +11,5 @@ for i in `seq 1 6000`; do
   python3 hv_folds.py $problemfile \
   > /tmp/hvfoldssolution
   ./submit_solution $i /tmp/hvfoldssolution
-  sleep 15s
+  sleep 3.6s
 done
