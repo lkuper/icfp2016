@@ -7,6 +7,7 @@ from fractions import Fraction
 import math
 
 from problem_parser import parse
+import calipers
 
 ## NB: vfolds reduce width.
 ## (they are like vsplits in vim)
@@ -197,6 +198,22 @@ def offset_solution_by(soln, offset_x, offset_y):
                                         (point.dest[1] + offset_y))))
     return (outpoints, facets)
 
+def rotate_solution(soln, theta):
+    points, facets = soln
+    destpoints = [(point.dest[0], point.dest[1]) for point in points]
+    rotated_destpoints = rotate_polygon(destpoints, theta)
+    fractified = [(Fraction(point[0]), Fraction(point[1])) for point in rotated_destpoints]
+
+    assert len(points) == len(fractified)
+
+    outpoints = []
+    for i in range(0, len(points)):
+        outpoints.append(SolutionPoint(points[i].source,
+                                       # destination coords
+                                       fractified[i]))
+    return outpoints, facets
+
+## NB: this one does offsetting too.
 def rotate_solution_by(soln, theta, problem_polygons):
     points, facets = soln
 
@@ -245,8 +262,10 @@ def rotate_polygon(polygon, theta):
     theta = math.radians(theta) # convert degrees to radians
     rotated_polygon = []
     for corner in polygon:
-        rotated_polygon.append((corner[0]*math.cos(theta)-corner[1]*math.sin(theta),
-                                corner[0]*math.sin(theta)+corner[1]*math.cos(theta)))
+        rotated_polygon.append(
+            (Fraction(corner[0]*math.cos(theta)-corner[1]*math.sin(theta)),
+             Fraction(corner[0]*math.sin(theta)+corner[1]*math.cos(theta)))
+        )
 
     return rotated_polygon
 
@@ -324,14 +343,7 @@ def best_regular_resemblance(probwidth, probheight):
     else:
         assert False, "something is very wrong"
 
-def main():
-    # TODO: figure these out programmatically
-    ROTATION_AMOUNT = 0
-    MAX_DENOMINATOR = 100000
-
-    fn = sys.argv[1]
-    polygons = parse(fn)
-
+def solve_simple_case(polygons):
     lowest_x, lowest_y = find_bottom_left(polygons)
     highest_x, highest_y = find_top_right(polygons)
 
@@ -347,14 +359,37 @@ def main():
     else:
         soln = irregular_fold(lfold, dfold)
 
-    soln = offset_solution_by(soln, lowest_x, lowest_y)
+    return offset_solution_by(soln, lowest_x, lowest_y)
 
-    # TODO: figure out how to use irregular_fold??
-    # TODO: figure out how much to rotate by
-    #soln = rotate_solution_by(soln, ROTATION_AMOUNT, polygons)
+def main():
+    # TODO: figure this out programmatically
+    MAX_DENOMINATOR = 100000
 
-    # Try to fix numeric instability
-    #soln = quantize_solution(soln, MAX_DENOMINATOR)
+    fn = sys.argv[1]
+    polygons = parse(fn)
+
+    # Rotation code! And it would have worked, too, if not for you meddling
+    # numerical instability. (works sometimes)
+    if False:
+        best_tan = calipers.best_angle(polygons)
+        theta = math.degrees(math.atan(best_tan))
+
+        ## do opposite rotation
+        ## It's never too late for Python mastery.
+        new_polys = {k: rotate_polygon(polygons[k], -theta)
+                     for k in polygons}
+
+        ## get solution
+        soln = solve_simple_case(new_polys)
+
+        ## rotate it back.
+        soln = rotate_solution(soln, theta)
+
+        # Try to fix numeric instability
+        soln = quantize_solution(soln, MAX_DENOMINATOR)
+    else:
+        ## Boring, non-rotational case.
+        soln = solve_simple_case(polygons)
 
     out = format_solution(soln)
     print(out)
