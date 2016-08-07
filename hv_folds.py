@@ -215,6 +215,10 @@ def quantize_solution(soln, max_denominator):
     return (outpoints, facets)
 
 def main():
+    # TODO: figure these out programmatically
+    ROTATION_AMOUNT = 46
+    MAX_DENOMINATOR = 29
+
     fn = sys.argv[1]
     polygons = parse(fn)
 
@@ -231,10 +235,10 @@ def main():
     soln = offset_solution_by(soln, lowest_x, lowest_y)
 
     # TODO: figure out how much to rotate by
-    soln = rotate_solution_by(soln, 53, polygons)
+    soln = rotate_solution_by(soln, ROTATION_AMOUNT, polygons)
 
     # Try to fix numeric instability
-    soln = quantize_solution(soln, 5)
+    soln = quantize_solution(soln, MAX_DENOMINATOR)
 
     format_solution(soln)
 
