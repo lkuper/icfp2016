@@ -102,7 +102,7 @@ def format_solution(soln):
     # make sure we have the right number of dest point locations
     assert len(set(dest_coords)) == 4
 
-    print(solution)
+    return solution
 
 def find_bottom_left(polygons):
     lowest_x = float('inf')
@@ -216,8 +216,8 @@ def quantize_solution(soln, max_denominator):
 
 def main():
     # TODO: figure these out programmatically
-    ROTATION_AMOUNT = 46
-    MAX_DENOMINATOR = 29
+    ROTATION_AMOUNT = 45
+    MAX_DENOMINATOR = 8
 
     fn = sys.argv[1]
     polygons = parse(fn)
@@ -240,7 +240,9 @@ def main():
     # Try to fix numeric instability
     soln = quantize_solution(soln, MAX_DENOMINATOR)
 
-    format_solution(soln)
+    soln = format_solution(soln)
+
+    print(soln)
 
 if __name__ == "__main__":
     main()
