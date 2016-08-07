@@ -109,7 +109,6 @@ def best_angle(polygons):
     return best_tan
 
 def main():
-    ## points = [(0,0), (2, 2), (1,0), (1,72), (0,1)]
     fn = sys.argv[1]
     problem = parse(fn)
     points = list_destination_points(problem)

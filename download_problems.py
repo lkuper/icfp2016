@@ -89,10 +89,15 @@ def list_all_problems(snapshot_hash):
     return out
 
 def download_save_problem(problem_id, spec_hash):
-    blob = raw_blob_lookup(spec_hash)
-
+    output_fn = "problems/problem_{:03d}".format(problem_id)
     assert os.path.exists("problems/")
-    with open("problems/problem_{:03d}".format(problem_id), "w") as outfile:
+
+    if os.path.exists(output_fn):
+        print("already got that one.")
+        return
+
+    blob = raw_blob_lookup(spec_hash)
+    with open(output_fn, "w") as outfile:
         print(blob, file=outfile, end="")
 
 def main():
