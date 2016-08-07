@@ -4,6 +4,7 @@ import sys
 import copy
 from collections import namedtuple
 from fractions import Fraction
+import math
 
 from problem_parser import parse
 
@@ -150,6 +151,43 @@ def offset_solution_by(soln, offset_x, offset_y):
                                         (point.dest[1] + offset_y))))
     return (outpoints, facets)
 
+def rotate_solution_by(soln, theta):
+    points, facets = soln
+
+    destpoints = [(point.dest[0], point.dest[1]) for point in points]
+    # print("destpoints:")
+    # print(destpoints)n
+    rotated_destpoints = rotate_polygon(destpoints, theta)
+    # print("rotated_destpoints:")
+    # print(rotated_destpoints)
+    fractified = [(Fraction(point[0]), Fraction(point[1])) for point in rotated_destpoints]
+    # print("fractified:")
+    # print(fractified)
+
+    assert len(points) == len(fractified)
+
+    outpoints = []
+    for i in range(0, len(points)):
+        outpoints.append(SolutionPoint(points[i].source,
+                                       # destination coords
+                                       fractified[i]))
+    # print("outpoints:")
+    # print(outpoints)
+    return (outpoints, facets)
+
+
+# Adapted from http://stackoverflow.com/questions/20023209/python-function-for-rotating-2d-objects
+def rotate_polygon(polygon, theta):
+    """Rotates the given polygon which consists of corners represented as (x,y),
+    around the ORIGIN, clock-wise, theta degrees"""
+    theta = math.radians(theta) # convert degrees to radians
+    rotated_polygon = []
+    for corner in polygon:
+        rotated_polygon.append((corner[0]*math.cos(theta)-corner[1]*math.sin(theta),
+                                corner[0]*math.sin(theta)+corner[1]*math.cos(theta)))
+
+    return rotated_polygon
+
 def main():
     fn = sys.argv[1]
     polygons = parse(fn)
@@ -163,6 +201,11 @@ def main():
     _, vfolds = smallest_half_bigger_than(width)
     _, hfolds = smallest_half_bigger_than(height)
     soln = solution_for(vfolds, hfolds)
+
+    # TODO: figure out correct offset
+    # TODO: figure out how much to rotate by
+    soln = rotate_solution_by(soln, 50)
+
     soln = offset_solution_by(soln, lowest_x, lowest_y)
 
     format_solution(soln)
