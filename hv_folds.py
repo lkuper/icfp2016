@@ -263,8 +263,8 @@ def quantize_solution(soln, max_denominator):
 
 def main():
     # TODO: figure these out programmatically
-    ROTATION_AMOUNT = 45
-    MAX_DENOMINATOR = 8
+    ROTATION_AMOUNT = 0
+    MAX_DENOMINATOR = 100000
 
     fn = sys.argv[1]
     polygons = parse(fn)
@@ -284,10 +284,10 @@ def main():
     # TODO: figure out how to use irregular_fold??
 
     # TODO: figure out how much to rotate by
-    soln = rotate_solution_by(soln, ROTATION_AMOUNT, polygons)
+    #soln = rotate_solution_by(soln, ROTATION_AMOUNT, polygons)
 
     # Try to fix numeric instability
-    soln = quantize_solution(soln, MAX_DENOMINATOR)
+    #soln = quantize_solution(soln, MAX_DENOMINATOR)
 
     soln = format_solution(soln)
 
