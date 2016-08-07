@@ -93,7 +93,7 @@ def solution_for(vfolds, hfolds):
 
     solution_points = []
 
-    ## For each point, find its source location.
+    ## Source and destination coords for every point.
     x_denominator = ncolumns
     y_denominator = nrows
     for y_numerator in range(nrows + 1):
