@@ -204,6 +204,16 @@ def rotate_polygon(polygon, theta):
 
     return rotated_polygon
 
+def quantize_solution(soln, max_denominator):
+    points, facets = soln
+    outpoints = []
+    for point in points:
+        outpoints.append(SolutionPoint(point.source,
+                                       # destination coords
+                                       ((point.dest[0].limit_denominator(max_denominator)),
+                                        (point.dest[1].limit_denominator(max_denominator)))))
+    return (outpoints, facets)
+
 def main():
     fn = sys.argv[1]
     polygons = parse(fn)
@@ -222,6 +232,9 @@ def main():
 
     # TODO: figure out how much to rotate by
     soln = rotate_solution_by(soln, 53, polygons)
+
+    # Try to fix numeric instability
+    soln = quantize_solution(soln, 5)
 
     format_solution(soln)
 
