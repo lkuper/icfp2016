@@ -34,9 +34,11 @@ def irregular_fold(left_fold_length, down_fold_length):
     """Create a Solution for if we want to fold over toward the left
     left_fold_length, and toward down from the top down_fold_length."""
 
+    #print(left_fold_length, down_fold_length)
+
     # Only works for folds that are less than half the paper width.
-    assert left_fold_length <= 0.5
-    assert down_fold_length <= 0.5
+    assert left_fold_length < 0.5
+    assert down_fold_length < 0.5
 
     solution_points = []
 
@@ -47,17 +49,17 @@ def irregular_fold(left_fold_length, down_fold_length):
     remaining_height = 1 - (down_fold_length * 2)
 
     ## left to right
-    col_widths       = [remaining_width, left_fold_length, left_fold_length]
-    x_source_offsets = [sum(col_widths[0:i]) for i in range(0, 4)]
-    x_dest_offsets   = [0, remaining_width, 1 - left_fold_length, remaining_width]
+    col_widths       = [1 - left_fold_length, left_fold_length]
+    x_source_offsets = [sum(col_widths[0:i]) for i in range(0, 3)]
+    x_dest_offsets   = [0, 1 - left_fold_length, remaining_width]
 
     ## bottom to top
-    row_heights      = [remaining_height, down_fold_length, down_fold_length]
-    y_source_offsets = [sum(row_heights[0:i]) for i in range(0, 4)]
-    y_dest_offsets   = [0, remaining_height, 1 - down_fold_length, remaining_height]
+    row_heights      = [1 - down_fold_length, down_fold_length]
+    y_source_offsets = [sum(row_heights[0:i]) for i in range(0, 3)]
+    y_dest_offsets   = [0, 1 - down_fold_length, remaining_height]
 
-    for y in range(0, 4):
-        for x in range(0, 4):
+    for y in range(0, 3):
+        for x in range(0, 3):
             solution_points.append(
                 SolutionPoint(
                     # source coords
@@ -67,10 +69,10 @@ def irregular_fold(left_fold_length, down_fold_length):
                     (Fraction(x_dest_offsets[x]),
                      Fraction(y_dest_offsets[y]))))
 
-    solution_facets = [(0, 2, 10, 8),
-                       (2, 3, 11, 10),
-                       (10, 11, 15, 14),
-                       (8, 10, 14, 12)]
+    solution_facets = [(0, 1, 4, 3),
+                       (1, 2, 5, 4),
+                       (4, 5, 8, 7),
+                       (3, 4, 7, 6)]
     return solution_points, solution_facets
 
 def solution_for(vfolds, hfolds):
@@ -276,8 +278,8 @@ def rectified_box_resemblance(bounding1, bounding2):
 def best_irregular_resemblance(probwidth, probheight):
     """Return resemblance score that we *could* get for a given width and
     height. Also return left fold length and down fold length."""
-    ourwidth = min(1, max(Fraction(1,2), probwidth))
-    ourheight = min(1, max(Fraction(1,2), probheight))
+    ourwidth = min(Fraction(99,100), max(Fraction(51,100), probwidth))
+    ourheight = min(Fraction(99,100), max(Fraction(51,100), probheight))
     ourscore = rectified_box_resemblance((probwidth, probheight),
                                          (ourwidth, ourheight))
     return ourscore,(1-ourwidth,1-ourheight)
