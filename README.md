@@ -68,8 +68,8 @@ understand.
 
 ## Final thoughts
 
-We had a lot of fun doing the contest this year, with feline
-assistance, of course:
+Thanks to the organizers for making this contest possible!  We had a
+lot of fun this year -- with feline assistance, of course:
 
 ![Mylk helps with our ICFP Contest submission.](https://pbs.twimg.com/media/CpJhBHUUAAAD_lV.jpg)
 
