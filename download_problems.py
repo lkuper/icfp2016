@@ -14,12 +14,12 @@ APIKEY = None
 
 def load_api_key():
     out = None
-    with open("APIKEY") as infile:
+    with open("POSTMORTEM_APIKEY") as infile:
         lines = infile.readlines()
         out = lines[0].strip()
     return out
 
-URLPREFIX = "http://2016sv.icfpcontest.org/api/"
+URLPREFIX = "http://130.211.240.134/api/"
 def get_curl(apicall):
     """Build a Curl with all the common options set."""
     c = pycurl.Curl()
@@ -89,7 +89,7 @@ def list_all_problems(snapshot_hash):
     return out
 
 def download_save_problem(problem_id, spec_hash):
-    output_fn = "problems/problem_{:03d}".format(problem_id)
+    output_fn = "problems/problem_{:04d}".format(problem_id)
     assert os.path.exists("problems/")
 
     if os.path.exists(output_fn):

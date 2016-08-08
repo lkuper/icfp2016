@@ -1,7 +1,8 @@
 #!/bin/bash
 
-for i in `seq 7000 1`; do
-  problemfile="problems/problem_$(printf "%03d\n" $i)"
+# 6258 is the largest problem ID on the postmortem server.
+for i in `seq 1 6258`; do
+  problemfile="problems/problem_$(printf "%04d\n" $i)"
 
   if [ ! -e $problemfile ]; then
     continue
@@ -10,6 +11,8 @@ for i in `seq 7000 1`; do
 
   python3 hv_folds.py $problemfile \
   > /tmp/hvfoldssolution
-  ./submit_solution $i /tmp/hvfoldssolution
+  ./submit_solution.sh $i /tmp/hvfoldssolution
+  # We can make one API request every 3.6 seconds indefinitely without
+  # running out of API requests.
   sleep 3.6s
 done

@@ -8,5 +8,5 @@ rm problems/*.json
 
 for problem in problems/*; do
   echo $problem;
-  ./parse_problem $problem > "$problem".json
+  python3 parse_problem.py $problem > "$problem".json
 done
