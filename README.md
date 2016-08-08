@@ -41,29 +41,29 @@ and vertically until we were close to the bounding box of the
 silhouette, then move the resulting folded-up rectangle to fit over
 the silhouette.  This worked well for problems with a tight
 rectilinear bounding box whose width and height was close to 1 divided
-by a power of two.  For others, it didn't always work.
+by a power of two.  For others, it didn't work so well.
 
 Then we added the ability to fold the paper once horizontally less
-than halfway and once vertically less than halfway.  This allowed us
+than halfway, and once vertically less than halfway.  This allowed us
 to do reasonably well on problems with tight bounding boxes that were
 between 0.5 and 1 on a side.
 
 At some point, we figured out that we would be better able to match a
 lot of silhouettes if we could rotate our folded-up rectangle to match
 the diameter of the points of the silhouette.  `calipers.py`
-implements this.  Unfortunately, we ran into a lot of trouble here
-with numerical instability.  Our rotation code worked well for, for
-example, probblems 5 and 6 (with judicious use of `limit_denominator`
-from Python's `fractions` module), but for problem 7 the server
-complained that our solution's destination facets weren't congruent
-with its source facets.  We think the calls to `math.cos` and
-`math.sin` in the `rotate_polygon` function are at fault.
+implements diameter-finding.  Unfortunately, we ran into a lot of
+trouble here with numerical instability.  Our rotation code worked
+well for, for example, problems 5 and 6 (with judicious use of
+`limit_denominator` from Python's `fractions` module), but for problem
+7 the server complained that our solution's destination facets weren't
+congruent with its source facets.  We think the calls to `math.cos`
+and `math.sin` in the `rotate_polygon` function are at fault.
 
 We also implemented a quick-and-dirty JavaScript visualizer in
 `visualizer.js`.  Open `visualizer.html` in your browser to try it
 out.  It displays problems and solutions by generating an SVG image.
 `parse_problem.py` and `solution_to_json.py` convert problems and
-solution, respectively, to a JSON format that the visualizer can
+solutions, respectively, to a JSON format that the visualizer can
 understand.
 
 ## Final thoughts
