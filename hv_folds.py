@@ -259,13 +259,26 @@ def rotate_solution_by(soln, theta, problem_polygons):
 def rotate_polygon(polygon, theta):
     """Rotates the given polygon which consists of corners represented as (x,y),
     around the ORIGIN, clock-wise, theta degrees"""
+
     theta = math.radians(theta) # convert degrees to radians
+
+    cosine = math.cos(theta)
+    sine = math.sin(theta)
+
+    if cosine == 0.0:
+        cosine = int(0)
+    elif cosine == 1.0:
+        cosine = int(1)
+    if sine == 0.0:
+        sine = int(0)
+    elif sine == 1.0:
+        sine = int(1)
+
     rotated_polygon = []
     for corner in polygon:
         rotated_polygon.append(
-            (Fraction(corner[0]*math.cos(theta)-corner[1]*math.sin(theta)),
-             Fraction(corner[0]*math.sin(theta)+corner[1]*math.cos(theta)))
-        )
+            (Fraction(corner[0]*cosine-corner[1]*sine),
+             Fraction(corner[0]*sine+corner[1]*cosine)))
 
     return rotated_polygon
 
@@ -370,7 +383,7 @@ def main():
 
     # Rotation code! And it would have worked, too, if not for you meddling
     # numerical instability. (works sometimes)
-    if False:
+    if True:
         best_tan = calipers.best_angle(polygons)
         theta = math.degrees(math.atan(best_tan))
 
